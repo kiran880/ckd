@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+
+{% block title %}Upload Dataset - CKD Prediction System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="medical-bg">
+                <h2 class="mb-4">
+                    <i class="fas fa-upload feature-icon me-2"></i>Upload Dataset
+                </h2>
+                
+                <div class="upload-zone mb-4" id="dropZone">
+                    <i class="fas fa-cloud-upload-alt fa-3x mb-3"></i>
+                    <p class="mb-2">Drag and drop your CSV file here</p>
+                    <p class="text-muted">or</p>
+                    <label class="btn btn-outline-primary">
+                        <i class="fas fa-folder-open me-2"></i>Browse Files
+                        <input type="file" id="fileInput" accept=".csv" style="display: none;">
+                    </label>
+                </div>
+
+                <div class="progress mb-3 d-none" id="uploadProgress">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"></div>
+                </div>
+
+                <div class="alert alert-info mt-4">
+                    <h5 class="alert-heading">
+                        <i class="fas fa-info-circle me-2"></i>Dataset Requirements
+                    </h5>
+                    <ul class="mb-0">
+                        <li><i class="fas fa-check me-2"></i>File format: CSV only</li>
+                        <li><i class="fas fa-check me-2"></i>Maximum file size: 16MB</li>
+                        <li><i class="fas fa-check me-2"></i>Required columns:</li>
+                        <ul>
+                            <li>age</li>
+                            <li>blood_pressure</li>
+                            <li>specific_gravity</li>
+                            <li>albumin</li>
+                            <li>blood_glucose</li>
+                            <li>blood_urea</li>
+                            <li>serum_creatinine</li>
+                            <li>sodium</li>
+                            <li>potassium</li>
+                            <li>hemoglobin</li>
+                            <li>target (0 for no CKD, 1 for CKD)</li>
+                        </ul>
+                    </ul>
+                </div>
+
+                <div class="alert alert-success mt-4 d-none" id="successAlert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span>Dataset uploaded successfully! Redirecting to home page...</span>
+                </div>
+
+                <div class="alert alert-danger mt-4 d-none" id="errorAlert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .upload-zone {
+        border: 2px dashed var(--border-color);
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .upload-zone:hover {
+        border-color: var(--text-primary);
+        background: var(--bg-card);
+    }
+
+    .upload-zone.dragover {
+        border-color: var(--text-primary);
+        background: var(--bg-card);
+        transform: scale(1.02);
+    }
+
+    .progress {
+        height: 10px;
+        border-radius: 5px;
+        background: var(--bg-card);
+    }
+
+    .progress-bar {
+        background: var(--btn-primary);
+    }
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const uploadProgress = document.getElementById('uploadProgress');
+    const progressBar = uploadProgress.querySelector('.progress-bar');
+    const successAlert = document.getElementById('successAlert');
+    const errorAlert = document.getElementById('errorAlert');
+
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+        document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    // Highlight drop zone when dragging over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, unhighlight, false);
+    });
+
+    // Handle dropped files
+    dropZone.addEventListener('drop', handleDrop, false);
+    fileInput.addEventListener('change', handleFiles, false);
+    dropZone.addEventListener('click', () => fileInput.click());
+
+    function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+    }
+
+    function highlight(e) {
+        dropZone.classList.add('dragover');
+    }
+
+    function unhighlight(e) {
+        dropZone.classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles({ target: { files } });
+    }
+
+    function handleFiles(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (file.size > 16 * 1024 * 1024) {
+            showError('File size exceeds 16MB limit');
+            return;
+        }
+
+        if (!file.name.toLowerCase().endsWith('.csv')) {
+            showError('Please upload a CSV file');
+            return;
+        }
+
+        uploadFile(file);
+    }
+
+    function uploadFile(file) {
+        const formData = new FormData();
+        formData.append('file', file);
+
+        uploadProgress.classList.remove('d-none');
+        successAlert.classList.add('d-none');
+        errorAlert.classList.add('d-none');
+
+        fetch('/upload_dataset', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                successAlert.classList.remove('d-none');
+                progressBar.style.width = '100%';
+                setTimeout(() => {
+                    window.location.href = data.redirect;
+                }, 2000);
+            } else {
+                showError(data.error);
+            }
+        })
+        .catch(error => {
+            showError('An error occurred during upload');
+        });
+    }
+
+    function showError(message) {
+        errorAlert.querySelector('span').textContent = message;
+        errorAlert.classList.remove('d-none');
+        uploadProgress.classList.add('d-none');
+        progressBar.style.width = '0%';
+    }
+</script>
+{% endblock %}

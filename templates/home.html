@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Home - CKD Prediction System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="medical-bg">
+                <h1 class="display-4 mb-4">
+                    <i class="fas fa-kidney feature-icon me-3"></i>
+                    Chronic Kidney Disease Prediction
+                </h1>
+                <p class="lead mb-4">Early detection of Chronic Kidney Disease (CKD) can significantly improve treatment outcomes. Our AI-powered system helps medical professionals assess CKD risk factors quickly and accurately.</p>
+                
+                {% if current_user.is_authenticated %}
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('upload') }}" class="btn btn-primary">
+                        <i class="fas fa-upload me-2"></i>Upload Dataset
+                    </a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-chart-line me-2"></i>Make Prediction
+                    </a>
+                </div>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="btn btn-primary">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login to Start
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="medical-bg h-100">
+                <img src="{{ url_for('static', filename='ckd-illustration.svg') }}" alt="CKD Illustration" class="img-fluid mb-4">
+                <h3 class="h4 mb-3">Why Early Detection Matters</h3>
+                <ul class="list-unstyled">
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Prevent complications</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Better treatment outcomes</li>
+                    <li class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Improved quality of life</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-4">
+        <div class="col-md-4">
+            <div class="feature-card">
+                <i class="fas fa-chart-bar feature-icon fa-3x mb-3"></i>
+                <h3 class="h4">Risk Assessment</h3>
+                <p>Our system analyzes key health indicators to assess CKD risk levels with high accuracy.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <i class="fas fa-heartbeat feature-icon fa-3x mb-3"></i>
+                <h3 class="h4">Health Monitoring</h3>
+                <p>Track changes in kidney function over time with comprehensive health data analysis.</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="feature-card">
+                <i class="fas fa-user-md feature-icon fa-3x mb-3"></i>
+                <h3 class="h4">Medical Support</h3>
+                <p>Assists healthcare professionals in making informed decisions about patient care.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="medical-bg mt-5">
+        <div class="row">
+            <div class="col-md-6">
+                <h2 class="h3 mb-4">Understanding CKD</h2>
+                <p>Chronic Kidney Disease affects millions worldwide. Early detection and treatment can help manage symptoms and slow disease progression.</p>
+                <img src="{{ url_for('static', filename='kidney-structure.svg') }}" alt="Kidney Structure" class="img-fluid mb-4">
+            </div>
+            <div class="col-md-6">
+                <h2 class="h3 mb-4">Key Risk Factors</h2>
+                <ul class="list-unstyled">
+                    <li class="mb-3">
+                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                        <strong>High Blood Pressure</strong>
+                        <p class="ms-4 mb-0">Can damage blood vessels in the kidneys</p>
+                    </li>
+                    <li class="mb-3">
+                        <i class="fas fa-tint text-danger me-2"></i>
+                        <strong>Diabetes</strong>
+                        <p class="ms-4 mb-0">May cause kidney damage over time</p>
+                    </li>
+                    <li class="mb-3">
+                        <i class="fas fa-heart text-danger me-2"></i>
+                        <strong>Heart Disease</strong>
+                        <p class="ms-4 mb-0">Affects blood flow to the kidneys</p>
+                    </li>
+                    <li class="mb-3">
+                        <i class="fas fa-smoking text-secondary me-2"></i>
+                        <strong>Smoking</strong>
+                        <p class="ms-4 mb-0">Increases risk of kidney disease</p>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

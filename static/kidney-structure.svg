@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800" height="600" version="1.1" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <linearGradient id="kidney-grad" x1="0" x2="1" y1="0" y2="1">
+   <stop stop-color="#e74c3c" offset="0"/>
+   <stop stop-color="#c0392b" offset="1"/>
+  </linearGradient>
+  <linearGradient id="vessel-grad" x1="0" x2="1" y1="0" y2="1">
+   <stop stop-color="#3498db" offset="0"/>
+   <stop stop-color="#2980b9" offset="1"/>
+  </linearGradient>
+ </defs>
+ <!-- Left Kidney -->
+ <g transform="translate(100,100)">
+  <!-- Main Kidney Shape -->
+  <path d="m50 200c0-100 100-200 200-200s200 100 200 200-100 200-200 200-200-100-200-200z" fill="url(#kidney-grad)" opacity=".9"/>
+  <!-- Inner Structure -->
+  <path d="m150 200c0-50 50-100 100-100s100 50 100 100-50 100-100 100-100-50-100-100z" fill="#fff" opacity=".2"/>
+  <!-- Blood Vessels -->
+  <path d="m250 50c-80 0-150 60-150 150s70 150 150 150 150-60 150-150-70-150-150-150zm0 50c55 0 100 45 100 100s-45 100-100 100-100-45-100-100 45-100 100-100z" fill="url(#vessel-grad)" opacity=".8"/>
+  <!-- Labels -->
+  <text x="250" y="380" fill="#fff" font-family="Arial" font-size="24" text-anchor="middle">Kidney Structure</text>
+  <text x="100" y="200" fill="#fff" font-family="Arial" font-size="16">Cortex</text>
+  <text x="400" y="200" fill="#fff" font-family="Arial" font-size="16">Medulla</text>
+ </g>
+</svg>

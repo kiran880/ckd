@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CKD Prediction System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="medical-bg">
+                <h2 class="mb-4">
+                    <i class="fas fa-chart-line feature-icon me-2"></i>CKD Prediction Form
+                </h2>
+                
+                {% if accuracy %}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>Model Accuracy: {{ accuracy }}%
+                </div>
+                {% endif %}
+
+                <form id="predictionForm" onsubmit="predict(event)">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-user-clock me-2"></i>Age
+                            </label>
+                            <input type="number" class="form-control" name="age" required min="0" max="120" step="1">
+                            <div class="feature-info">Patient's age in years</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-heart me-2"></i>Blood Pressure
+                            </label>
+                            <input type="number" class="form-control" name="blood_pressure" required min="0" max="300" step="0.1">
+                            <div class="feature-info">Blood pressure in mm/Hg</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-tint me-2"></i>Specific Gravity
+                            </label>
+                            <input type="number" class="form-control" name="specific_gravity" required step="0.001" min="1.000" max="1.050">
+                            <div class="feature-info">Urine specific gravity (1.005-1.025)</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-flask me-2"></i>Albumin
+                            </label>
+                            <input type="number" class="form-control" name="albumin" required min="0" max="10" step="0.1">
+                            <div class="feature-info">Albumin level (0-6)</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-chart-bar me-2"></i>Blood Glucose
+                            </label>
+                            <input type="number" class="form-control" name="blood_glucose" required min="0" step="0.1">
+                            <div class="feature-info">Blood glucose level in mg/dL</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-vial me-2"></i>Blood Urea
+                            </label>
+                            <input type="number" class="form-control" name="blood_urea" required min="0" step="0.1">
+                            <div class="feature-info">Blood urea level in mg/dL</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-microscope me-2"></i>Serum Creatinine
+                            </label>
+                            <input type="number" class="form-control" name="serum_creatinine" required step="0.01" min="0">
+                            <div class="feature-info">Serum creatinine level in mg/dL</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-atom me-2"></i>Sodium
+                            </label>
+                            <input type="number" class="form-control" name="sodium" required min="0" step="0.1">
+                            <div class="feature-info">Sodium level in mEq/L</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-atom me-2"></i>Potassium
+                            </label>
+                            <input type="number" class="form-control" name="potassium" required step="0.1" min="0">
+                            <div class="feature-info">Potassium level in mEq/L</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">
+                                <i class="fas fa-tint me-2"></i>Hemoglobin
+                            </label>
+                            <input type="number" class="form-control" name="hemoglobin" required step="0.1" min="0">
+                            <div class="feature-info">Hemoglobin level in g/dL</div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-calculator me-2"></i>Predict
+                        </button>
+                    </div>
+                </form>
+
+                <div class="loading d-none mt-4" id="loading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+
+                <div class="alert alert-success mt-4 d-none" id="resultSuccess">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <span id="resultMessage"></span>
+                </div>
+
+                <div class="alert alert-danger mt-4 d-none" id="resultError">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span id="errorMessage"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .feature-info {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .form-control {
+        background: var(--bg-input);
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+    }
+
+    .form-control:focus {
+        background: var(--bg-input);
+        border-color: var(--btn-primary);
+        color: var(--text-primary);
+        box-shadow: 0 0 0 0.2rem var(--btn-primary-shadow);
+    }
+
+    .form-label {
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    async function predict(event) {
+        event.preventDefault();
+        
+        const form = event.target;
+        const loading = document.getElementById('loading');
+        const resultSuccess = document.getElementById('resultSuccess');
+        const resultError = document.getElementById('resultError');
+        const resultMessage = document.getElementById('resultMessage');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Hide previous results
+        resultSuccess.classList.add('d-none');
+        resultError.classList.add('d-none');
+        loading.classList.remove('d-none');
+
+        // Collect form data
+        const formData = new FormData(form);
+        const data = {};
+        for (let [key, value] of formData.entries()) {
+            data[key] = parseFloat(value);
+        }
+
+        try {
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            loading.classList.add('d-none');
+
+            if (result.success) {
+                window.location.href = `/result?prediction=${result.prediction}&probability=${result.probability}`;
+            } else {
+                errorMessage.textContent = result.error || 'An error occurred during prediction';
+                resultError.classList.remove('d-none');
+            }
+        } catch (error) {
+            loading.classList.add('d-none');
+            errorMessage.textContent = 'An error occurred during prediction';
+            resultError.classList.remove('d-none');
+        }
+    }
+</script>
+{% endblock %}

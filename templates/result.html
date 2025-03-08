@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Prediction Result - CKD Prediction System{% endblock %}
+
+{% block content %}
+<div class="result-container {% if prediction == 1 %}high-risk{% else %}low-risk{% endif %}">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="result-card">
+                    <div class="back-nav mb-3">
+                        <a href="{{ url_for('dashboard') }}" class="back-icon">
+                            <i class="fas fa-arrow-left"></i>
+                        </a>
+                    </div>
+                    <h2 class="mb-4 text-center">
+                        {% if prediction == 1 %}
+                        <i class="fas fa-exclamation-triangle me-2"></i>Disease Detected
+                        {% else %}
+                        <i class="fas fa-check-circle me-2"></i>Disease Not Detected
+                        {% endif %}
+                    </h2>
+                    
+                    <div class="confidence-info text-center mb-4">
+                        Confidence: {{ "%.1f"|format(probability * 100) }}%
+                    </div>
+
+                    {% if prediction == 1 %}
+                    <div class="risk-description">
+                        <h3>Important Information:</h3>
+                        <ul>
+                            <li>The test results indicate presence of Chronic Kidney Disease</li>
+                            <li>Please consult a healthcare professional immediately</li>
+                            <li>Early detection and treatment can help manage the condition effectively</li>
+                        </ul>
+                    </div>
+                    {% else %}
+                    <div class="healthy-description">
+                        <h3>Good News!</h3>
+                        <ul>
+                            <li>The test results indicate no presence of Chronic Kidney Disease</li>
+                            <li>Continue maintaining a healthy lifestyle</li>
+                            <li>Regular check-ups are still recommended</li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .result-container {
+        min-height: 100vh;
+        transition: background-color 0.3s ease;
+    }
+    
+    .result-container.high-risk {
+        background-color: rgba(220, 53, 69, 0.1);
+    }
+    
+    .result-container.low-risk {
+        background-color: rgba(40, 167, 69, 0.1);
+    }
+    
+    .result-card {
+        background: var(--bg-card);
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        position: relative;
+    }
+    
+    .confidence-info {
+        font-size: 1.2rem;
+        color: var(--text-secondary);
+    }
+    
+    .risk-description, .healthy-description {
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 1rem 0;
+    }
+    
+    .risk-description {
+        background: rgba(220, 53, 69, 0.1);
+    }
+    
+    .healthy-description {
+        background: rgba(40, 167, 69, 0.1);
+    }
+
+    .back-nav {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+    }
+
+    .back-icon {
+        color: var(--text-primary);
+        font-size: 1.5rem;
+        text-decoration: none;
+        transition: transform 0.3s ease, color 0.3s ease;
+        display: inline-block;
+    }
+
+    .back-icon:hover {
+        transform: translateX(-5px);
+        color: var(--primary);
+    }
+</style>
+{% endblock %}

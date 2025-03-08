@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512" height="512" version="1.1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+ <defs>
+  <linearGradient id="a" x1="0" x2="1" y1="0" y2="1">
+   <stop stop-color="#3498db" offset="0"/>
+   <stop stop-color="#2ecc71" offset="1"/>
+  </linearGradient>
+ </defs>
+ <!-- Medical Cross -->
+ <g transform="translate(156,156)">
+  <rect x="80" y="0" width="40" height="200" rx="20" fill="url(#a)"/>
+  <rect x="0" y="80" width="200" height="40" rx="20" fill="url(#a)"/>
+ </g>
+ <!-- Circular Border -->
+ <circle cx="256" cy="256" r="240" fill="none" stroke="url(#a)" stroke-width="20"/>
+ <!-- Pulse Line -->
+ <path d="m96 256 60-40 60 40 60-120 60 120 60-40 60 40" fill="none" stroke="url(#a)" stroke-width="10"/>
+</svg>
