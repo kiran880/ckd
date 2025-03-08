@@ -8,3 +8,5 @@ flask-login==0.6.3
 flask-sqlalchemy==3.1.1
 werkzeug==3.0.1
 gunicorn==21.2.0
+pip>=25.0.1
+setuptools>=68.0.0
